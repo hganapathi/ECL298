@@ -244,8 +244,8 @@ summary(regresschill)
 plot(df$dormancychill, df$yield)
 
 # Regressions for 1980 to 2019 anaylsis
-# regress includes all variables for cherries
-# regress2 excludes dormancytmean due to multicollinearity issues
+# regress3 includes all variables for cherries
+# regress4 excludes dormancytmean due to multicollinearity issues
 regress3 <- lm(yield ~ dormancychill + bloomtmean + bloomppt + dormancytmean + county, data = df2)
 summary(regress3)
 
@@ -253,78 +253,6 @@ regress4 <- lm(yield ~ dormancychill + bloomtmean + bloomppt + county, data = df
 summary(regress2)
 vif(regress)
 
-ggplot(df) +
-  geom_point(aes(x = dormancychill, y = yield), color = "blue") +
-  geom_smooth(aes(x = dormancychill, y = yield), method = "lm", se = FALSE, color = "blue") +
-  geom_point(aes(x = bloomtmean, y = yield), color = "red") +
-  geom_smooth(aes(x = bloomtmean, y = yield), method = "lm", se = FALSE, color = "red") +
-  geom_point(aes(x = bloomppt, y = yield), color = "green") +
-  geom_smooth(aes(x = bloomppt, y = yield), method = "lm", se = FALSE, color = "green") +
-  geom_point(aes(x = dormancytmean, y = yield), color = "purple") +
-  geom_smooth(aes(x = dormancytmean, y = yield), method = "lm", se = FALSE, color = "purple") +
-  facet_wrap(~ dormancychill, scales = "free_x") +
-  facet_wrap(~ bloomtmean, scales = "free_x") +
-  facet_wrap(~ bloomppt, scales = "free_x") + 
-  facet_wrap(~ dormancytmean, scales = "free_x") + 
-  theme_minimal() +
-  labs(title = "Scatterplots of Climate Variables vs Yield with Trend Lines",
-       x = "Agroclimatic Index (ACI) Value",
-       y = "Yield (tons per acre)")
 
-
-#plotting ca counties stuff
-cacounties <- st_read("C:/Users/hgana/Desktop/Aggregated Yield Data/California_Counties.shp")
-cacounties <- cacounties %>%
-  mutate(highlight = ifelse(COUNTY_NAM %in% highlighted, "Yes", "No"))
-
-
-#Plotting cacounties for anlysis 2000 to 2019
-highlighted <- c("Contra Costa", "Stanislaus", "San Benito", "San Joaquin", "Santa Clara", "Sacramento", "Tulare", "El Dorado", "Fresno", "Kern")
-
-
-centroids <- cacounties %>%
-  st_centroid() %>%
-  filter(COUNTY_NAM %in% highlighted) %>%
-  mutate(x = st_coordinates(.)[,1],
-         y = st_coordinates(.)[,2])
-
-
-ggplot(data = cacounties) +
-  geom_sf(aes(fill = highlight), color = "black") +
-  scale_fill_manual(values = c("No" = "white", "Yes" = "pink")) +
-  geom_text(data = centroids, aes(x = x, y = y, label = COUNTY_NAM), size = 2, color = "black") +
-  theme_minimal() +
-  theme(
-    axis.title = element_blank(),
-    axis.text = element_blank(),
-    axis.ticks = element_blank(),
-    panel.grid = element_blank()
-  ) +
-  labs(title = "California Cherry Counties, 2000-2019", fill = "Consistently Grew Cherries")
-
-#Plotting cacounties for analysis 1980 to 2019
-highlighted2 <- c("Contra Costa", "Stanislaus", "San Benito", "San Joaquin") 
-
-cacounties <- cacounties %>%
-  mutate(highlight2 = ifelse(COUNTY_NAM %in% highlighted2, "Yes", "No"))
-
-centroids2 <- cacounties %>%
-  st_centroid() %>%
-  filter(COUNTY_NAM %in% highlighted2) %>%
-  mutate(x = st_coordinates(.)[,1],
-         y = st_coordinates(.)[,2])
-
-ggplot(data = cacounties) +
-  geom_sf(aes(fill = highlight2), color = "black") +
-  scale_fill_manual(values = c("No" = "white", "Yes" = "lightblue")) +
-  geom_text(data = centroids2, aes(x = x, y = y, label = COUNTY_NAM), size = 2, color = "black") +
-  theme_minimal() +
-  theme(
-    axis.title = element_blank(),
-    axis.text = element_blank(),
-    axis.ticks = element_blank(),
-    panel.grid = element_blank()
-  ) +
-  labs(title = "California Cherry Counties, 1980-2019", fill = "Consistently Grew Cherries")
 
 
